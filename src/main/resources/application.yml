@@ -1,3 +1,37 @@
 spring:
   application:
     name: CMSServer
+
+  datasource:
+    url: jdbc:h2:mem:malgncms;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+
+  h2:
+    console:
+      enabled: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 5014afd827f4dac3efa2fafcb11d896c
+            client-secret: wmVoIThdkU8CmB5VBF3yXoIOFlmn5don
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+jwt:
+  secret-key: dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdA==
+
+client:
+  url: http://localhost:3000
+  endpoint: /auth
