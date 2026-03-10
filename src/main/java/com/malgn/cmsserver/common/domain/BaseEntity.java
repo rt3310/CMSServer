@@ -1,4 +1,4 @@
-package com.malgn.cmsserver.global.domain;
+package com.malgn.cmsserver.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

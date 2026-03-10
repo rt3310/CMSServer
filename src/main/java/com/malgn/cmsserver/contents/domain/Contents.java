@@ -1,6 +1,6 @@
 package com.malgn.cmsserver.contents.domain;
 
-import com.malgn.cmsserver.global.domain.BaseEntity;
+import com.malgn.cmsserver.common.domain.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity

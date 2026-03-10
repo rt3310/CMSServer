@@ -1,6 +1,6 @@
 package com.malgn.cmsserver.member.domain;
 
-import com.malgn.cmsserver.global.domain.BaseEntity;
+import com.malgn.cmsserver.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
