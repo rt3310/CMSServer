@@ -19,15 +19,15 @@ public class BaseEntity {
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
-    @LastModifiedDate
-    @Column(columnDefinition = "VARCHAR(50)")
-    private LocalDateTime lastModifiedDate;
-
     @CreatedBy
-    @Column(nullable = false, updatable = false)
+    @Column(length = 50, nullable = false, updatable = false)
     private String createdBy;
 
+    @LastModifiedDate
+    @Column
+    private LocalDateTime lastModifiedDate;
+
     @LastModifiedBy
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(length = 50)
     private String lastModifiedBy;
 }
