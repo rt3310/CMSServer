@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final JwtValidator jwtValidator;
+    private final OnceAuthTokenService onceAuthTokenService;
     private final JwtGenerator jwtGenerator;
 
     public Jwt login(String onceAuthToken) {
-        String subject = jwtValidator.getSubjectIfValid(onceAuthToken);
+        String memberKey = onceAuthTokenService.validateAndConsume(onceAuthToken);
 
-        return jwtGenerator.generateJwt(subject);
+        return jwtGenerator.generateJwt(memberKey);
     }
 }

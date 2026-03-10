@@ -1,7 +1,7 @@
 package com.malgn.cmsserver.config.security.handler;
 
 import com.malgn.cmsserver.member.domain.AuthMember;
-import com.malgn.cmsserver.member.service.JwtGenerator;
+import com.malgn.cmsserver.member.service.OnceAuthTokenService;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtGenerator jwtGenerator;
+    private final OnceAuthTokenService onceAuthTokenService;
 
     @Value("${client.url}")
     private String clientUrl;
@@ -37,6 +37,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new AppException(ErrorType.SERVER_ERROR));
 
         getRedirectStrategy().sendRedirect(request, response,
-                clientUrl + endpoint + "?token=" + jwtGenerator.generateOnceAuthToken(authMember.getName()));
+                clientUrl + endpoint + "?token=" + onceAuthTokenService.generate(authMember.getName()));
     }
 }

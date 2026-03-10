@@ -22,6 +22,7 @@ public enum ErrorType {
     INVALID_SIGNATURE(HttpStatus.BAD_REQUEST, ErrorCode.E2004, "JWT Signature 검증에 실패했습니다.", LogLevel.WARN),
     INVALID_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E2005, "JWT가 유효하지 않습니다.", LogLevel.WARN),
     UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, ErrorCode.E2006, "지원하지 않는 OAuth Provider 입니다.", LogLevel.WARN),
+    INVALID_ONCE_AUTH_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E2007, "유효하지 않거나 만료된 인증 토큰입니다.", LogLevel.WARN),
     ;
 
     private final HttpStatus status;

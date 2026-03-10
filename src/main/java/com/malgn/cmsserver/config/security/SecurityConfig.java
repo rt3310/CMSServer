@@ -57,7 +57,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(setOAuth2LoginConfig())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(mvc.matcher("/login/**")).permitAll()
+                        .requestMatchers(
+                                mvc.matcher("/login/**"),
+                                mvc.matcher("/api/v1/auth/login")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(configurer ->

@@ -21,17 +21,6 @@ class JwtGeneratorTest {
     JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
 
     @Test
-    @DisplayName("OnceAuthToken을 생성하면 subject에 memberKey가 포함된다.")
-    void generateOnceAuthToken() {
-        String memberKey = "memberKey";
-
-        String token = jwtGenerator.generateOnceAuthToken(memberKey);
-
-        Claims claims = parseToken(token);
-        assertThat(claims.getSubject()).isEqualTo(memberKey);
-    }
-
-    @Test
     @DisplayName("JWT를 생성하면 accessToken과 refreshToken이 반환된다.")
     void generateJwt() {
         String memberKey = "memberKey";

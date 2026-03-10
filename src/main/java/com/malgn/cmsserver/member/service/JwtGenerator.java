@@ -16,15 +16,10 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtGenerator {
 
-    private static final long ONCE_AUTH_TOKEN_VALIDATION_SECONDS = 30L;
     private static final long ACCESS_TOKEN_VALIDATION_SECONDS = 60L * 30;
     private static final long REFRESH_TOKEN_VALIDATION_SECONDS = 60L * 60 * 24 * 14;
 
     private final SecretKey secretKey;
-
-    public String generateOnceAuthToken(String memberKey) {
-        return buildToken(memberKey, ONCE_AUTH_TOKEN_VALIDATION_SECONDS);
-    }
 
     public Jwt generateJwt(String memberKey) {
         if (memberKey == null || memberKey.isBlank()) {
