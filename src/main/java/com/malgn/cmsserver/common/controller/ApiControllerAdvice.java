@@ -1,0 +1,63 @@
+package com.malgn.cmsserver.common.controller;
+
+import com.malgn.cmsserver.support.exception.AppException;
+import com.malgn.cmsserver.support.exception.ErrorCode;
+import com.malgn.cmsserver.support.exception.ErrorType;
+import com.malgn.cmsserver.support.response.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@Slf4j
+@RestControllerAdvice
+public class ApiControllerAdvice {
+
+    @NullMarked
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException e) {
+        printAppExceptionLog(e);
+
+        return new ResponseEntity<>(ApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
+    }
+
+    @NullMarked
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+        printExceptionLog(e);
+        return new ResponseEntity<>(ApiResponse.error(ErrorType.SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void printAppExceptionLog(AppException e) {
+        String className = e.getStackTrace()[0].getClassName();
+        String methodName = e.getStackTrace()[0].getMethodName();
+        int lineNumber = e.getStackTrace()[0].getLineNumber();
+        int status = e.getErrorType().getStatus().value();
+        ErrorCode errorCode = e.getErrorType().getErrorCode();
+        String message = e.getMessage();
+
+        switch (e.getErrorType().getLogLevel()) {
+            case ERROR ->
+                    log.error("[AppException]: class={} | method={} | line={} | status={} | errorCode={} | message={}",
+                            className, methodName, lineNumber, status, errorCode, message);
+            case WARN ->
+                    log.warn("[AppException]: class={} | method={} | line={} | status={} | errorCode={} | message={}",
+                            className, methodName, lineNumber, status, errorCode, message);
+            default ->
+                    log.info("[AppException]: class={} | method={} | line={} | status={} | errorCode={} | message={}",
+                            className, methodName, lineNumber, status, errorCode, message);
+        }
+    }
+
+    private void printExceptionLog(Exception e) {
+        String className = e.getStackTrace()[0].getClassName();
+        String methodName = e.getStackTrace()[0].getMethodName();
+        int lineNumber = e.getStackTrace()[0].getLineNumber();
+        String message = e.getMessage();
+
+        log.error("[AppException]: class={} | method={} | line={} | message={}",
+                className, methodName, lineNumber, message);
+    }
+}
