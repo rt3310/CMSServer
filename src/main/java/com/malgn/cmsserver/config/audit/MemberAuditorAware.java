@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @NullMarked
@@ -20,7 +21,7 @@ public class MemberAuditorAware implements AuditorAware<String> {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals(ANONYMOUS_USER)
+                || Objects.equals(authentication.getPrincipal(), ANONYMOUS_USER)
                 || authentication.getName() == null) {
             return Optional.of(SYSTEM);
         }
