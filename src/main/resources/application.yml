@@ -35,3 +35,8 @@ jwt:
 client:
   url: http://localhost:3000
   endpoint: /auth
+
+cache:
+  once-auth-token:
+    expire-seconds: 30
+    max-size: 10000
