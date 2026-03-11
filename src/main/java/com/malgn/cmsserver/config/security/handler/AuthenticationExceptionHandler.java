@@ -1,5 +1,6 @@
 package com.malgn.cmsserver.config.security.handler;
 
+import com.malgn.cmsserver.common.util.NetworkUtils;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import com.malgn.cmsserver.support.response.ApiResponse;
@@ -7,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +26,6 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class AuthenticationExceptionHandler {
 
-    private static final String[] HEADERS = {
-            "X-Forwarded-For",
-            "X-Real-IP",
-            "Proxy-Client-IP",
-            "WL-Proxy-Client-IP",
-            "HTTP_CLIENT_IP",
-            "HTTP_X_FORWARDED_FOR"
-    };
-    private static final String UNKNOWN = "unknown";
     private static final String USER_AGENT = "User-Agent";
 
     private final ObjectMapper objectMapper;
@@ -58,7 +49,7 @@ public class AuthenticationExceptionHandler {
     private void writeUnauthorizedResponse(HttpServletRequest request, HttpServletResponse response,
                                            ApiResponse<Void> body)
             throws IOException {
-        String clientIp = getClientIp(request);
+        String clientIp = NetworkUtils.getClientIp(request);
         String method = request.getMethod();
         String uri = request.getRequestURI();
         String userAgent = request.getHeader(USER_AGENT);
@@ -83,16 +74,5 @@ public class AuthenticationExceptionHandler {
         } else {
             return ErrorType.FAILED_AUTH;
         }
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        for (String header : HEADERS) {
-            String ip = request.getHeader(header);
-            if (Strings.isNotBlank(ip) && !ip.equalsIgnoreCase(UNKNOWN)) {
-                return ip.split(",")[0];
-            }
-        }
-
-        return request.getRemoteAddr();
     }
 }

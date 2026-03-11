@@ -40,3 +40,9 @@ cache:
   once-auth-token:
     expire-seconds: 30
     max-size: 10000
+
+rate-limiter:
+  capacity: 5
+  refill-token-amount: 5
+  refill-duration-seconds: 10
+  cache-max-size: 10000
