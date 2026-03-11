@@ -20,4 +20,8 @@ public record ApiResponse<T>(
     public static ApiResponse<Void> error(ErrorType error) {
         return new ApiResponse<>(ResultType.ERROR, null, ErrorMessage.of(error));
     }
+
+    public static ApiResponse<Void> error(ErrorType error, String message) {
+        return new ApiResponse<>(ResultType.ERROR, null, ErrorMessage.of(error, message));
+    }
 }

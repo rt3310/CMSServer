@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,6 +24,35 @@ public class ApiControllerAdvice {
         printAppExceptionLog(e);
 
         return new ResponseEntity<>(ApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
+    }
+
+    @NullMarked
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("[ValidationException]: {}", e.getMessage());
+
+        String errorMessage = ErrorType.INVALID_INPUT.getMessage();
+
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        if (fieldError != null) {
+                errorMessage = fieldError.getField() + ": " + fieldError.getDefaultMessage();
+        }
+
+        return new ResponseEntity<>(
+                ApiResponse.error(ErrorType.INVALID_INPUT, errorMessage),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @NullMarked
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("[HttpMessageNotReadableException]: {}", e.getMessage());
+
+        return new ResponseEntity<>(
+                ApiResponse.error(ErrorType.INVALID_REQUEST_BODY),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @NullMarked
@@ -57,7 +89,7 @@ public class ApiControllerAdvice {
         int lineNumber = e.getStackTrace()[0].getLineNumber();
         String message = e.getMessage();
 
-        log.error("[AppException]: class={} | method={} | line={} | message={}",
+        log.error("[Exception]: class={} | method={} | line={} | message={}",
                 className, methodName, lineNumber, message);
     }
 }

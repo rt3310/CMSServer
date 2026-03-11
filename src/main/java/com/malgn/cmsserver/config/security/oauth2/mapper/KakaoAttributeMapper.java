@@ -2,10 +2,13 @@ package com.malgn.cmsserver.config.security.oauth2.mapper;
 
 import com.malgn.cmsserver.config.security.oauth2.OAuth2Request;
 import com.malgn.cmsserver.member.domain.OAuthProvider;
+import com.malgn.cmsserver.support.exception.AppException;
+import com.malgn.cmsserver.support.exception.ErrorType;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class KakaoAttributeMapper implements AttributeMapper {
@@ -15,7 +18,10 @@ public class KakaoAttributeMapper implements AttributeMapper {
 
     @Override
     public OAuth2Request mapToRequest(Map<String, Object> attributes) {
-        String account = attributes.get(ID).toString();
+        String account = Optional.ofNullable(attributes.get(ID))
+                .map(Object::toString)
+                .orElseThrow(() -> new AppException(ErrorType.FAILED_AUTH));
+
         Map<String, Object> kakaoAccount = getAsMap(attributes, "kakao_account");
         Map<String, Object> profile = getAsMap(kakaoAccount, "profile");
         String name = profile.getOrDefault("nickname", UNKNOWN).toString();

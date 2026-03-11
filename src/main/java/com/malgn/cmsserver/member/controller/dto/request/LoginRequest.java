@@ -1,4 +1,9 @@
 package com.malgn.cmsserver.member.controller.dto.request;
 
-public record LoginRequest(String onceAuthToken) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequest(
+        @NotBlank(message = "인증 토큰은 필수입니다.")
+        String onceAuthToken
+) {
 }
