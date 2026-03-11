@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 mvc.matcher("/login/**"),
-                                mvc.matcher("/api/v1/auth/login")).permitAll()
+                                mvc.matcher("/api/v1/auth/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(configurer ->

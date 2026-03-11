@@ -15,14 +15,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class LoginServiceTest {
+class AuthServiceTest {
 
     @Mock
     OnceAuthTokenService onceAuthTokenService;
     @Mock
     JwtGenerator jwtGenerator;
     @InjectMocks
-    LoginService loginService;
+    AuthService authService;
 
     @Test
     @DisplayName("유효한 onceAuthToken으로 로그인하면 JWT가 반환된다.")
@@ -34,7 +34,7 @@ class LoginServiceTest {
         given(onceAuthTokenService.validateAndConsume(onceAuthToken)).willReturn(memberKey);
         given(jwtGenerator.generateJwt(memberKey)).willReturn(expectedJwt);
 
-        Jwt jwt = loginService.login(onceAuthToken);
+        Jwt jwt = authService.login(onceAuthToken);
 
         assertThat(jwt.accessToken()).isEqualTo("accessToken");
         assertThat(jwt.refreshToken()).isEqualTo("refreshToken");
@@ -48,7 +48,7 @@ class LoginServiceTest {
         given(onceAuthTokenService.validateAndConsume(invalidToken))
                 .willThrow(new AppException(ErrorType.INVALID_ONCE_AUTH_TOKEN));
 
-        assertThatThrownBy(() -> loginService.login(invalidToken))
+        assertThatThrownBy(() -> authService.login(invalidToken))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.INVALID_ONCE_AUTH_TOKEN);
@@ -62,7 +62,7 @@ class LoginServiceTest {
         given(onceAuthTokenService.validateAndConsume(expiredToken))
                 .willThrow(new AppException(ErrorType.INVALID_ONCE_AUTH_TOKEN));
 
-        assertThatThrownBy(() -> loginService.login(expiredToken))
+        assertThatThrownBy(() -> authService.login(expiredToken))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.INVALID_ONCE_AUTH_TOKEN);
