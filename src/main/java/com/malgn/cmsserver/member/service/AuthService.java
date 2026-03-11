@@ -1,7 +1,9 @@
 package com.malgn.cmsserver.member.service;
 
 import com.malgn.cmsserver.member.domain.Jwt;
+import com.malgn.cmsserver.member.domain.Member;
 import com.malgn.cmsserver.member.domain.RefreshToken;
+import com.malgn.cmsserver.member.repository.MemberRepository;
 import com.malgn.cmsserver.member.repository.RefreshTokenRepository;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OnceAuthTokenService onceAuthTokenService;
     private final JwtGenerator jwtGenerator;
@@ -24,7 +27,21 @@ public class AuthService {
     public Jwt login(String onceAuthToken) {
         String memberKey = onceAuthTokenService.validateAndConsume(onceAuthToken);
 
-        return jwtGenerator.generateJwt(memberKey);
+        Member member = memberRepository.findByMemberKey(memberKey)
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA));
+
+        Jwt jwt = jwtGenerator.generateJwt(memberKey);
+        saveOrUpdateRefreshToken(member, jwt.refreshToken());
+
+        return jwt;
+    }
+
+    private void saveOrUpdateRefreshToken(Member member, String refreshToken) {
+        refreshTokenRepository.findByMemberMemberKey(member.getMemberKey())
+                .ifPresentOrElse(
+                        token -> token.update(refreshToken),
+                        () -> refreshTokenRepository.save(new RefreshToken(refreshToken, member))
+                );
     }
 
     public Jwt refresh(String refreshToken) {
