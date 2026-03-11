@@ -18,7 +18,7 @@ import static org.mockito.BDDMockito.given;
 class LoginServiceTest {
 
     @Mock
-    JwtValidator jwtValidator;
+    OnceAuthTokenService onceAuthTokenService;
     @Mock
     JwtGenerator jwtGenerator;
     @InjectMocks
@@ -31,7 +31,7 @@ class LoginServiceTest {
         String memberKey = "memberKey";
         Jwt expectedJwt = new Jwt("accessToken", "refreshToken");
 
-        given(jwtValidator.getSubjectIfValid(onceAuthToken)).willReturn(memberKey);
+        given(onceAuthTokenService.validateAndConsume(onceAuthToken)).willReturn(memberKey);
         given(jwtGenerator.generateJwt(memberKey)).willReturn(expectedJwt);
 
         Jwt jwt = loginService.login(onceAuthToken);
@@ -41,44 +41,30 @@ class LoginServiceTest {
     }
 
     @Test
-    @DisplayName("만료된 onceAuthToken으로 로그인하면 AppException이 발생한다.")
-    void throwAppExceptionIfOnceAuthTokenIsExpired() {
-        String expiredToken = "expiredToken";
-
-        given(jwtValidator.getSubjectIfValid(expiredToken))
-                .willThrow(new AppException(ErrorType.EXPIRED_JWT));
-
-        assertThatThrownBy(() -> loginService.login(expiredToken))
-                .isInstanceOf(AppException.class)
-                .extracting("errorType")
-                .isEqualTo(ErrorType.EXPIRED_JWT);
-    }
-
-    @Test
     @DisplayName("유효하지 않은 onceAuthToken으로 로그인하면 AppException이 발생한다.")
     void throwAppExceptionIfOnceAuthTokenIsInvalid() {
         String invalidToken = "invalidToken";
 
-        given(jwtValidator.getSubjectIfValid(invalidToken))
-                .willThrow(new AppException(ErrorType.MALFORMED_JWT));
+        given(onceAuthTokenService.validateAndConsume(invalidToken))
+                .willThrow(new AppException(ErrorType.INVALID_ONCE_AUTH_TOKEN));
 
         assertThatThrownBy(() -> loginService.login(invalidToken))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
-                .isEqualTo(ErrorType.MALFORMED_JWT);
+                .isEqualTo(ErrorType.INVALID_ONCE_AUTH_TOKEN);
     }
 
     @Test
-    @DisplayName("서명이 유효하지 않은 onceAuthToken으로 로그인하면 AppException이 발생한다.")
-    void throwAppExceptionIfSignatureIsInvalid() {
-        String invalidSignatureToken = "invalidSignatureToken";
+    @DisplayName("만료된 onceAuthToken으로 로그인하면 AppException이 발생한다.")
+    void throwAppExceptionIfOnceAuthTokenIsExpired() {
+        String expiredToken = "expiredToken";
 
-        given(jwtValidator.getSubjectIfValid(invalidSignatureToken))
-                .willThrow(new AppException(ErrorType.INVALID_SIGNATURE));
+        given(onceAuthTokenService.validateAndConsume(expiredToken))
+                .willThrow(new AppException(ErrorType.INVALID_ONCE_AUTH_TOKEN));
 
-        assertThatThrownBy(() -> loginService.login(invalidSignatureToken))
+        assertThatThrownBy(() -> loginService.login(expiredToken))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
-                .isEqualTo(ErrorType.INVALID_SIGNATURE);
+                .isEqualTo(ErrorType.INVALID_ONCE_AUTH_TOKEN);
     }
 }

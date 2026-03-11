@@ -8,6 +8,7 @@ import java.util.List;
 
 public enum MemberFixture {
     DEFAULT(OAuthProvider.KAKAO, "kakaoAccount", "name", List.of(MemberRole.ROLE_USER)),
+    ADMIN(OAuthProvider.KAKAO, "adminAccount", "admin", List.of(MemberRole.ROLE_ADMIN)),
     ;
 
     private final OAuthProvider oAuthProvider;
