@@ -14,6 +14,7 @@ public enum ErrorType {
     REQUIRED_AUTH(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "리소스에 접근하기 위한 인증이 필요합니다.", LogLevel.WARN),
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorCode.E403, "해당 리소스에 대한 권한이 없습니다.", LogLevel.WARN),
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.E429, "너무 많은 요청을 보냈습니다.", LogLevel.WARN),
+    CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 충돌했습니다. 다시 시도해주세요.", LogLevel.WARN),
 
     // Member
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "멤버 key가 유효하지 않습니다.", LogLevel.WARN),

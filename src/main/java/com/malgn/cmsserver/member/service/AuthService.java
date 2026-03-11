@@ -6,9 +6,11 @@ import com.malgn.cmsserver.member.repository.RefreshTokenRepository;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -31,7 +33,9 @@ public class AuthService {
         RefreshToken savedRefreshToken = refreshTokenRepository.findByMemberMemberKey(memberKey)
                 .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA));
 
-        if (!savedRefreshToken.isValid(refreshToken)) {
+        if (savedRefreshToken.isNotEqual(refreshToken)) {
+            log.warn("[Token Reuse Detected]: memberKey={} | 토큰 탈취 가능성으로 세션 무효화", memberKey);
+            refreshTokenRepository.delete(savedRefreshToken);
             throw new AppException(ErrorType.FAILED_AUTH);
         }
 

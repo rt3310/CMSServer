@@ -4,11 +4,13 @@ import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorCode;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import com.malgn.cmsserver.support.response.ApiResponse;
+import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +54,17 @@ public class ApiControllerAdvice {
         return new ResponseEntity<>(
                 ApiResponse.error(ErrorType.INVALID_REQUEST_BODY),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @NullMarked
+    @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<ApiResponse<Void>> handleOptimisticLockException(Exception e) {
+        log.warn("[OptimisticLockException]: {}", e.getMessage());
+
+        return new ResponseEntity<>(
+                ApiResponse.error(ErrorType.CONFLICT),
+                HttpStatus.CONFLICT
         );
     }
 

@@ -1,10 +1,8 @@
 package com.malgn.cmsserver.member.controller;
 
-import com.malgn.cmsserver.config.security.annotation.AuthMember;
 import com.malgn.cmsserver.member.controller.dto.request.LoginRequest;
 import com.malgn.cmsserver.member.controller.dto.response.JwtResponse;
 import com.malgn.cmsserver.member.domain.Jwt;
-import com.malgn.cmsserver.member.domain.Member;
 import com.malgn.cmsserver.member.service.AuthService;
 import com.malgn.cmsserver.support.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
 
     private final AuthService authService;
 
@@ -31,8 +30,16 @@ public class AuthController {
 
     @NullMarked
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(@RequestHeader(AUTHORIZATION) String refreshToken) {
+    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(@RequestHeader(AUTHORIZATION) String authorization) {
+        String refreshToken = extractToken(authorization);
         Jwt jwt = authService.refresh(refreshToken);
         return ResponseEntity.ok(ApiResponse.success(new JwtResponse(jwt.accessToken(), jwt.refreshToken())));
+    }
+
+    private String extractToken(String authorization) {
+        if (authorization != null && authorization.startsWith(BEARER)) {
+            return authorization.substring(BEARER.length());
+        }
+        return authorization;
     }
 }

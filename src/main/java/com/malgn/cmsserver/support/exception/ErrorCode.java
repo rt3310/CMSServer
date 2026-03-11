@@ -1,7 +1,7 @@
 package com.malgn.cmsserver.support.exception;
 
 public enum ErrorCode {
-    E400, E401, E403, E404, E429,
+    E400, E401, E403, E404, E409, E429,
     E500,
 
     // Member

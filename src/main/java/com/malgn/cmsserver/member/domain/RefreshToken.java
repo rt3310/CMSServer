@@ -13,6 +13,9 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false)
     private String refreshToken;
 
@@ -29,7 +32,7 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public boolean isValid(String refreshToken) {
-        return this.refreshToken.equals(refreshToken);
+    public boolean isNotEqual(String refreshToken) {
+        return !this.refreshToken.equals(refreshToken);
     }
 }
