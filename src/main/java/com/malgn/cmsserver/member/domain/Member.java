@@ -36,10 +36,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private List<MemberRole> roles;
 
-    public List<SimpleGrantedAuthority> getAuthorities() {
-        return roles.stream().map(MemberRole::name).map(SimpleGrantedAuthority::new).toList();
-    }
-
     @Builder
     public Member(OAuthProvider oauthProvider, String oauthAccount, String name, List<MemberRole> roles) {
         this.memberKey = UUID.randomUUID().toString();
@@ -47,5 +43,13 @@ public class Member extends BaseEntity {
         this.oauthAccount = oauthAccount;
         this.name = name;
         this.roles = roles;
+    }
+
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return roles.stream().map(MemberRole::name).map(SimpleGrantedAuthority::new).toList();
+    }
+
+    public boolean isAdmin() {
+        return roles.contains(MemberRole.ROLE_ADMIN);
     }
 }
