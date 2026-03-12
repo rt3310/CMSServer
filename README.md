@@ -1,8 +1,33 @@
 # 맑은기술 CMS Server
 
 ## 프로젝트 실행 방법
+
+### 1. 환경 변수 설정
+`.env` 파일을 프로젝트 루트에 생성하고 필요한 환경 변수를 설정합니다.
 ```bash
-./gradlew bootRun
+# .env
+KAKAO_CLIENT_ID=your-kakao-client-id
+KAKAO_CLIENT_SECRET=your-kakao-client-secret
+KAKAO_REDIRECT_URI={baseUrl}/{action}/oauth2/code/{registrationId}
+JWT_SECRET=your-jwt-secret-key-base64-encoded
+```
+
+### 2. (방법 1) Local 실행 (Local Java 25 환경 필요)
+```bash
+# Linux/Mac
+export $(cat .env | xargs) && ./gradlew bootRun
+
+# Windows (PowerShell)
+Get-Content .env | ForEach-Object { if ($_ -match "^([^=]+)=(.*)$") { [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2]) } }; ./gradlew bootRun
+```
+
+### 2. (방법 2) Docker 실행
+```bash
+# 이미지 빌드
+docker build -t cms-server .
+
+# 컨테이너 실행 (.env 파일 참조)
+docker run -d -p 8080:8080 --env-file .env --name cms-server cms-server
 ```
 
 ## 구현 사항
@@ -23,6 +48,16 @@
 
 ### 2. 인증/인가
 
+- 로그인 방식은 OAuth2(Kakao) + JWT를 선택하여 구현했습니다.
+- REST API 서버의 확장성, 다양한 클라이언트 대응을 위해 선택했습니다.
+
+#### 로그인 과정
+1. /oauth2/authorize/kakao 로 접속
+2. 카카오 로그인 및 동의 과정 진행
+3. clientURL(현재 localhost:3000)으로 redirect를 통한 일회성 토큰 발급 http://localhost:3000/auth?token=onceAuthToken 
+4. POST /login에 일회성 토큰을 통한 JWT 발급 요청
+5. JWT(Access Token, RefreshToken) 응답
+
 #### OAuth2 로그인
 - Kakao OAuth2 Provider 지원
 - OAuth2 로그인 성공 시 일회성 인증 토큰 발급
@@ -38,13 +73,13 @@
 | POST | `/api/v1/auth/refresh` | Refresh Token으로 JWT 갱신 |
 
 #### 일회성 인증 토큰 (OnceAuthToken)
-- Caffeine Cache 기반
-- 30초 후 자동 만료
+- Caffeine Cache 기반 구현
+- 30초 후 자동 만료(TTL)
 - 일회용 (사용 시 즉시 삭제)
 
 #### Refresh Token 보안
 - Bearer prefix 처리
-- 낙관적 락 (`@Version`)으로 Race Condition 방지
+- 낙관적 락으로 Race Condition 방지 (사용자가 직접 재시도하도록 실패 처리)
 - 토큰 재사용 감지 시 세션 무효화 (토큰 탈취 대응)
 
 ### 3. Rate Limiting
