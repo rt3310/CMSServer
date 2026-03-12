@@ -1,6 +1,7 @@
 package com.malgn.cmsserver.member.service;
 
 import com.malgn.cmsserver.member.domain.Jwt;
+import com.malgn.cmsserver.member.domain.TokenType;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +17,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtGenerator {
 
+    public static final String TOKEN_TYPE_CLAIM = "type";
+
     private static final long ACCESS_TOKEN_VALIDATION_SECONDS = 60L * 30;
     private static final long REFRESH_TOKEN_VALIDATION_SECONDS = 60L * 60 * 24 * 14;
 
@@ -29,16 +32,17 @@ public class JwtGenerator {
     }
 
     private String generateAccessToken(String memberKey) {
-        return buildToken(memberKey, ACCESS_TOKEN_VALIDATION_SECONDS);
+        return buildToken(memberKey, TokenType.ACCESS, ACCESS_TOKEN_VALIDATION_SECONDS);
     }
 
     private String generateRefreshToken(String memberKey) {
-        return buildToken(memberKey, REFRESH_TOKEN_VALIDATION_SECONDS);
+        return buildToken(memberKey, TokenType.REFRESH, REFRESH_TOKEN_VALIDATION_SECONDS);
     }
 
-    private String buildToken(String memberKey, long expireSeconds) {
+    private String buildToken(String memberKey, TokenType tokenType, long expireSeconds) {
         return Jwts.builder()
                 .subject(memberKey)
+                .claim(TOKEN_TYPE_CLAIM, tokenType.name())
                 .expiration(Date.from(Instant.now().plus(expireSeconds, ChronoUnit.SECONDS)))
                 .signWith(secretKey)
                 .compact();

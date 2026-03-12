@@ -2,6 +2,7 @@ package com.malgn.cmsserver.config.security.filter;
 
 import com.malgn.cmsserver.member.domain.AuthMember;
 import com.malgn.cmsserver.member.domain.Member;
+import com.malgn.cmsserver.member.domain.TokenType;
 import com.malgn.cmsserver.member.service.JwtValidator;
 import com.malgn.cmsserver.member.service.MemberService;
 import jakarta.servlet.FilterChain;
@@ -28,10 +29,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String BEARER = "Bearer ";
+    private static final List<String> PERMIT_URLS = List.of(
+            "/api/v1/auth/"
+    );
 
     private final MemberService memberService;
     private final JwtValidator jwtValidator;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        return PERMIT_URLS.stream().anyMatch(requestURI::startsWith);
+    }
 
     @NullMarked
     @Override
@@ -47,20 +56,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void authenticate(String token) {
-        if (!isBearerToken(token)) {
-            return;
-        }
-
-        String subject = jwtValidator.getSubjectIfValid(token.substring(BEARER.length()));
+        String subject = jwtValidator.getSubjectIfValidWithType(token, TokenType.ACCESS);
         Member member = memberService.find(subject);
         List<SimpleGrantedAuthority> authorities = member.getAuthorities();
         AuthMember authMember = new AuthMember(member, new HashMap<>(), authorities);
 
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(authMember, null, authorities));
-    }
-
-    private boolean isBearerToken(String token) {
-        return token.startsWith(BEARER);
     }
 }

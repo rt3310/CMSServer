@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private static final String AUTHORIZATION = "Authorization";
-    private static final String BEARER = "Bearer ";
 
     private final AuthService authService;
 
@@ -30,16 +29,8 @@ public class AuthController {
 
     @NullMarked
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(@RequestHeader(AUTHORIZATION) String authorization) {
-        String refreshToken = extractToken(authorization);
+    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(@RequestHeader(AUTHORIZATION) String refreshToken) {
         Jwt jwt = authService.refresh(refreshToken);
         return ResponseEntity.ok(ApiResponse.success(new JwtResponse(jwt.accessToken(), jwt.refreshToken())));
-    }
-
-    private String extractToken(String authorization) {
-        if (authorization != null && authorization.startsWith(BEARER)) {
-            return authorization.substring(BEARER.length());
-        }
-        return authorization;
     }
 }

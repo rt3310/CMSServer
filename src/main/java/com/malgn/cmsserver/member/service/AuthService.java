@@ -3,6 +3,7 @@ package com.malgn.cmsserver.member.service;
 import com.malgn.cmsserver.member.domain.Jwt;
 import com.malgn.cmsserver.member.domain.Member;
 import com.malgn.cmsserver.member.domain.RefreshToken;
+import com.malgn.cmsserver.member.domain.TokenType;
 import com.malgn.cmsserver.member.repository.MemberRepository;
 import com.malgn.cmsserver.member.repository.RefreshTokenRepository;
 import com.malgn.cmsserver.support.exception.AppException;
@@ -45,7 +46,7 @@ public class AuthService {
     }
 
     public Jwt refresh(String refreshToken) {
-        String memberKey = jwtValidator.getSubjectIfValid(refreshToken);
+        String memberKey = jwtValidator.getSubjectIfValidWithType(refreshToken, TokenType.REFRESH);
 
         RefreshToken savedRefreshToken = refreshTokenRepository.findByMemberMemberKey(memberKey)
                 .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA));
