@@ -3,7 +3,7 @@ package com.malgn.cmsserver.support.ratelimit.filter;
 import com.malgn.cmsserver.common.util.NetworkUtils;
 import com.malgn.cmsserver.support.exception.ErrorType;
 import com.malgn.cmsserver.support.ratelimit.LimitApi;
-import com.malgn.cmsserver.support.response.ApiResponse;
+import com.malgn.cmsserver.support.response.AppApiResponse;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
@@ -86,7 +86,7 @@ public class ApiThrottlingFilter implements Filter {
         httpResponse.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String responseValue = objectMapper.writeValueAsString(
-                ApiResponse.error(ErrorType.TOO_MANY_REQUESTS, waitForRefill + "초 뒤에 다시 시도해주세요"));
+                AppApiResponse.error(ErrorType.TOO_MANY_REQUESTS, waitForRefill + "초 뒤에 다시 시도해주세요"));
         response.getWriter().write(responseValue);
     }
 }

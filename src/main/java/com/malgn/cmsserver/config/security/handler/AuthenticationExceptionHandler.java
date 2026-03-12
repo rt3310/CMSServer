@@ -3,7 +3,7 @@ package com.malgn.cmsserver.config.security.handler;
 import com.malgn.cmsserver.common.util.NetworkUtils;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorType;
-import com.malgn.cmsserver.support.response.ApiResponse;
+import com.malgn.cmsserver.support.response.AppApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class AuthenticationExceptionHandler {
         if (response.isCommitted()) {
             return;
         }
-        writeUnauthorizedResponse(request, response, ApiResponse.error(exception.getErrorType()));
+        writeUnauthorizedResponse(request, response, AppApiResponse.error(exception.getErrorType()));
     }
 
     public void handle(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
@@ -43,11 +43,11 @@ public class AuthenticationExceptionHandler {
         if (response.isCommitted()) {
             return;
         }
-        writeUnauthorizedResponse(request, response, ApiResponse.error(resolveErrorCode(exception)));
+        writeUnauthorizedResponse(request, response, AppApiResponse.error(resolveErrorCode(exception)));
     }
 
     private void writeUnauthorizedResponse(HttpServletRequest request, HttpServletResponse response,
-                                           ApiResponse<Void> body)
+                                           AppApiResponse<Void> body)
             throws IOException {
         String clientIp = NetworkUtils.getClientIp(request);
         String method = request.getMethod();

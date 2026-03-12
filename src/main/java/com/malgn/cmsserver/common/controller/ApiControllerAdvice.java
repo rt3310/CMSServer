@@ -3,7 +3,7 @@ package com.malgn.cmsserver.common.controller;
 import com.malgn.cmsserver.support.exception.AppException;
 import com.malgn.cmsserver.support.exception.ErrorCode;
 import com.malgn.cmsserver.support.exception.ErrorType;
-import com.malgn.cmsserver.support.response.ApiResponse;
+import com.malgn.cmsserver.support.response.AppApiResponse;
 import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
@@ -22,15 +22,15 @@ public class ApiControllerAdvice {
 
     @NullMarked
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException e) {
+    public ResponseEntity<AppApiResponse<Void>> handleAppException(AppException e) {
         printAppExceptionLog(e);
 
-        return new ResponseEntity<>(ApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
+        return new ResponseEntity<>(AppApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
     }
 
     @NullMarked
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<AppApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.warn("[ValidationException]: {}", e.getMessage());
 
         String errorMessage = ErrorType.INVALID_INPUT.getMessage();
@@ -41,38 +41,38 @@ public class ApiControllerAdvice {
         }
 
         return new ResponseEntity<>(
-                ApiResponse.error(ErrorType.INVALID_INPUT, errorMessage),
+                AppApiResponse.error(ErrorType.INVALID_INPUT, errorMessage),
                 HttpStatus.BAD_REQUEST
         );
     }
 
     @NullMarked
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<AppApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.warn("[HttpMessageNotReadableException]: {}", e.getMessage());
 
         return new ResponseEntity<>(
-                ApiResponse.error(ErrorType.INVALID_REQUEST_BODY),
+                AppApiResponse.error(ErrorType.INVALID_REQUEST_BODY),
                 HttpStatus.BAD_REQUEST
         );
     }
 
     @NullMarked
     @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
-    public ResponseEntity<ApiResponse<Void>> handleOptimisticLockException(Exception e) {
+    public ResponseEntity<AppApiResponse<Void>> handleOptimisticLockException(Exception e) {
         log.warn("[OptimisticLockException]: {}", e.getMessage());
 
         return new ResponseEntity<>(
-                ApiResponse.error(ErrorType.CONFLICT),
+                AppApiResponse.error(ErrorType.CONFLICT),
                 HttpStatus.CONFLICT
         );
     }
 
     @NullMarked
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    public ResponseEntity<AppApiResponse<Void>> handleException(Exception e) {
         printExceptionLog(e);
-        return new ResponseEntity<>(ApiResponse.error(ErrorType.SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(AppApiResponse.error(ErrorType.SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void printAppExceptionLog(AppException e) {
