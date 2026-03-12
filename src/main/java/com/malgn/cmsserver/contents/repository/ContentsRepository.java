@@ -14,7 +14,7 @@ public interface ContentsRepository extends JpaRepository<Contents, Long> {
 
     Slice<Contents> findAllByOrderByCreatedDateDesc(Pageable pageable);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Contents c SET c.viewCount = c.viewCount + 1 WHERE c.id = :id")
     void increaseViewCount(@Param("id") Long id);
 }

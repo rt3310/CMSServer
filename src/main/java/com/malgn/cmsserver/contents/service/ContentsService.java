@@ -33,7 +33,7 @@ public class ContentsService {
         return contentsRepository.findAllByOrderByCreatedDateDesc(pageable);
     }
 
-    public Contents getDetailWithViewCount(Long id) {
+    public Contents findDetailWithViewCount(Long id) {
         contentsRepository.increaseViewCount(id);
         return findById(id);
     }

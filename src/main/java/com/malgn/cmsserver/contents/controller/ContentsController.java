@@ -37,7 +37,7 @@ public class ContentsController {
     private final ContentsService contentsService;
 
     @Operation(summary = "콘텐츠 생성", description = "새로운 콘텐츠를 생성합니다.")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "생성 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 검증 실패"),
@@ -50,7 +50,7 @@ public class ContentsController {
     }
 
     @Operation(summary = "콘텐츠 목록 조회", description = "콘텐츠 목록을 페이징하여 조회합니다.")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "401", description = "인증 필요")
@@ -65,7 +65,7 @@ public class ContentsController {
     }
 
     @Operation(summary = "콘텐츠 상세 조회", description = "콘텐츠 상세 정보를 조회합니다. 조회 시 조회수가 증가합니다.")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "콘텐츠를 찾을 수 없음"),
@@ -75,12 +75,12 @@ public class ContentsController {
     public ResponseEntity<AppApiResponse<ContentsResponse>> getDetail(
             @Parameter(description = "콘텐츠 ID", required = true)
             @PathVariable Long id) {
-        Contents contents = contentsService.getDetailWithViewCount(id);
+        Contents contents = contentsService.findDetailWithViewCount(id);
         return ResponseEntity.ok(AppApiResponse.success(ContentsResponse.from(contents)));
     }
 
     @Operation(summary = "콘텐츠 수정", description = "콘텐츠를 수정합니다. 작성자 또는 ADMIN만 수정 가능합니다.")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "콘텐츠를 찾을 수 없음"),
@@ -98,7 +98,7 @@ public class ContentsController {
     }
 
     @Operation(summary = "콘텐츠 삭제", description = "콘텐츠를 삭제합니다. 작성자 또는 ADMIN만 삭제 가능합니다.")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "400", description = "콘텐츠를 찾을 수 없음"),

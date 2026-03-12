@@ -46,3 +46,13 @@ rate-limiter:
   refill-token-amount: 5
   refill-duration-seconds: 10
   cache-max-size: 10000
+
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs
+    path: /v3/api-docs
+    disable-swagger-default-url: true
+  api-docs:
+    enabled: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json

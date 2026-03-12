@@ -73,7 +73,7 @@ class ContentsServiceTest {
 
         given(contentsRepository.findById(contentsId)).willReturn(Optional.of(contents));
 
-        Contents result = contentsService.getDetailWithViewCount(contentsId);
+        Contents result = contentsService.findDetailWithViewCount(contentsId);
 
         assertThat(result.getTitle()).isEqualTo("테스트 제목");
         verify(contentsRepository).increaseViewCount(contentsId);
@@ -86,7 +86,7 @@ class ContentsServiceTest {
 
         given(contentsRepository.findById(contentsId)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> contentsService.getDetailWithViewCount(contentsId))
+        assertThatThrownBy(() -> contentsService.findDetailWithViewCount(contentsId))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.NOT_FOUND_DATA);
